@@ -1,11 +1,11 @@
 import 'dart:html';
-import 'dart:ui';
 
 import 'package:firstproject/screens/home_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
   const login({super.key});
@@ -27,7 +27,7 @@ class _loginState extends State<login> {
   String? Checkboxgroup;
   String? Segmented;
   String? Choicechip;
-  
+  String? userPrefs;
 
   List gender = ["Male", "Female", "Others"];
 
@@ -251,35 +251,37 @@ class _loginState extends State<login> {
                 height: 20,
               ),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color.fromARGB(255, 180, 36, 26),
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      username =
-                          _formKey.currentState!.value["username"].toString();
-                      username =
-                          _formKey.currentState!.value["password"].toString();
-                      username = _formKey.currentState!.value["genderselected"]
-                          .toString();
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(255, 180, 36, 26),
+                ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    username =
+                        _formKey.currentState!.value["username"].toString();
+                    username =
+                        _formKey.currentState!.value["password"].toString();
+                    username = _formKey.currentState!.value["genderselected"]
+                        .toString();
+                    userinfo(username!, password!, genderselected!);
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => homescreen(
-                                    username: username!,
-                                    password: password!,
-                                    gender: genderselected!,
-                                  )));
-                      _formKey.currentState!.fields['User Name']!.reset();
-                      _formKey.currentState!.fields['Password']!.reset();
-                      _formKey.currentState!.fields['Gender']!.reset();
-                    } else {
-                      print("Error");
-                    }
-                  },
-                  child: Text("Sign In")),
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => homescreen(
+                                  username: username!,
+                                  password: password!,
+                                  gender: genderselected!,
+                                )));
+                    _formKey.currentState!.fields['User Name']!.reset();
+                    _formKey.currentState!.fields['Password']!.reset();
+                    _formKey.currentState!.fields['Gender']!.reset();
+                  } else {
+                    print("Error");
+                  }
+                },
+                child: Text("Sign In"),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -299,5 +301,11 @@ class _loginState extends State<login> {
         )),
       ),
     );
+  }
+
+  void userinfo(String username, String password, String genderselected) async {
+    SharedPreferences userPrefs = await SharedPreferences.getInstance();
+    userPrefs.setStringList("userInfo", [username, password, genderselected]);
+    print(userPrefs.getStringList("userInfo"));
   }
 }
